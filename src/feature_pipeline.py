@@ -9,6 +9,7 @@ import gc
 from tqdm import tqdm
 import openl3
 from kapre.time_frequency import STFT
+from sklearn.preprocessing import StandardScaler
 
 
 # ---------- CONFIG ----------
@@ -17,6 +18,7 @@ INPUT_CSV_KEY = "metadata/track_metadata.csv"
 OUTPUT_PKL_LOCAL = "track_metadata_features.pkl"
 OUTPUT_PKL_S3 = "metadata/track_metadata_features.pkl"
 OUTPUT_PKL_EMBED_S3 = "metadata/track_metadata_feature_embedding.pkl"
+OUTPUT_PKL_COMBINED_S3 = "metadata/track_metadata_combined.pkl"
 # ----------------------------
 def mp3_to_wav_bytes(mp3_bytes):
     ffmpeg_cmd = [
@@ -127,6 +129,26 @@ def process_key(key):
     except Exception as e:
         print(f"Failed to process {key}: {e}")
         return (key, None)
+    
+#Combine Features
+def combine_features_normalized(df):
+    # Convert lists/arrays to 2D numpy arrays
+    feature_array = np.vstack(df['feature'].values)
+    embedding_array = np.vstack(df['embedding'].values)
+    
+    # Normalize each separately
+    scaler_feat = StandardScaler()
+    scaler_emb = StandardScaler()
+
+    feature_norm = scaler_feat.fit_transform(feature_array)
+    embedding_norm = scaler_emb.fit_transform(embedding_array)
+    
+    # Combine normalized features
+    combined = np.hstack([feature_norm, embedding_norm])
+    
+    # Put back to DataFrame
+    df['combined'] = list(combined)
+    return df
 
 def main():
     print("[INFO] Starting feature extraction pipeline...")
@@ -167,6 +189,11 @@ def main():
 
     upload_dataframe_as_pickle_to_s3(df, s3_key=OUTPUT_PKL_EMBED_S3)
 
+    # combinding the features and embeddings
+
+    new_df = combine_features_normalized(df)
+    upload_dataframe_as_pickle_to_s3(new_df, s3_key=OUTPUT_PKL_COMBINED_S3)
+    print("[INFO] Feature combination Complete.")
 
 
 if __name__ == "__main__":
