@@ -100,7 +100,7 @@ def init_worker():
     )
 
 
-def extract_openl3_embedding_from_s3(key: str) -> np.ndarray:
+def extract_openl3_embedding_from_s3(key: str, model=None) -> np.ndarray:
     s3 = boto3.client("s3")
     response = s3.get_object(Bucket=BUCKET_NAME, Key=key)
     mp3_bytes = response['Body'].read()
@@ -109,8 +109,14 @@ def extract_openl3_embedding_from_s3(key: str) -> np.ndarray:
     wav_io.seek(0)
     audio, sr = sf.read(wav_io)
 
-    # Use model loaded in init_worker
-    global _model
+    # Use passed model if available
+    if model is None:
+        model = openl3.models.load_audio_embedding_model(
+            input_repr="mel256",
+            content_type="music",
+            embedding_size=512
+        )
+
     emb, ts = openl3.get_audio_embedding(audio, sr, model=_model, verbose=0)
     return emb.mean(axis=0)
 
