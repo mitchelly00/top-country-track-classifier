@@ -6,20 +6,26 @@ import numpy as np
 
 MODEL_S3_URL = "https://ucwdc-country-classifier.s3.us-east-1.amazonaws.com/final_models/lightgbm_model.txt"
 PKL_S3_URL = "https://top-country-track-classifier.s3.us-east-1.amazonaws.com/metadata/track_metadata_combined.pkl"
+BUCKET_NAME_MODEL = "ucwdc-country-classifier"
+MODEL_KEY = "final_models/lightgbm_model.txt"
+DATA_KEY = "metadata/track_metadata_combined.pkl"
 BUCKET_NAME = "top-country-track-classifier"
 OUTPUT_PKL_PRED_S3 = "track_metadata_with_predictions.pkl"
 
-def download_file_from_s3_url(url):
-    """Download a file given a public S3 URL."""
-    import requests
-    response = requests.get(url)
-    if response.status_code != 200:
-        raise RuntimeError(f"Failed to download from {url}")
-    return response.content
+# def download_file_from_s3_url(url):
+#     """Download a file given a public S3 URL."""
+#     import requests
+#     response = requests.get(url)
+#     if response.status_code != 200:
+#         raise RuntimeError(f"Failed to download from {url}")
+#     return response.content
+
+        
 
 def load_model():
     print("[INFO] Downloading and loading LightGBM model...")
-    model_bytes = download_file_from_s3_url(MODEL_S3_URL)
+    s3 = boto3.client('s3')
+    model_bytes = s3.get_object(Bucket=BUCKET_NAME_MODEL, Key=MODEL_KEY)
     model_str = model_bytes.decode("utf-8")
     model = lgb.Booster(model_str=model_str)
     print("[INFO] Model loaded.")
@@ -27,7 +33,8 @@ def load_model():
 
 def load_dataframe():
     print("[INFO] Downloading and loading DataFrame...")
-    df_bytes = download_file_from_s3_url(PKL_S3_URL)
+    s3 = boto3.client('s3')
+    df_bytes = s3.get_object(Bucket=BUCKET_NAME, Key=DATA_KEY)
     df = pd.read_pickle(io.BytesIO(df_bytes))
     print("[INFO] DataFrame loaded with shape:", df.shape)
     return df
