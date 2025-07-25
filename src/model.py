@@ -32,7 +32,7 @@ def load_model():
     with tempfile.NamedTemporaryFile(mode='wb', delete=False) as tmp:
         tmp.write(model_bytes)
         tmp_path = tmp.name
-    model = lgb.Booster(model_str=tmp_path)
+    model = lgb.Booster(model_file=tmp_path)
     print("[INFO] Model loaded.")
     return model
 
