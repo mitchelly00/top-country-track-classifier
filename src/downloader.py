@@ -56,9 +56,13 @@ def upload_df_to_s3(df, key, bucket=bucket_name):
     df.to_csv(csv_buffer, index=False)
     s3.put_object(Bucket=bucket, Key=key, Body=csv_buffer.getvalue())
 
-# Create dataframe
-df = pd.DataFrame(rows)
+def main():
+    # Create dataframe
+    df = pd.DataFrame(rows)
 
-#upload dataframe
-upload_df_to_s3(df, "metadata/track_metadata.csv")
-print("uploaded to S3")
+    #upload dataframe
+    upload_df_to_s3(df, "metadata/track_metadata.csv")
+    print("uploaded to S3")
+
+if __name__ == "__main__":
+    main()
