@@ -40,7 +40,7 @@ def load_dataframe():
     print("[INFO] Downloading and loading DataFrame...")
     s3 = boto3.client('s3')
     df_bytes = s3.get_object(Bucket=BUCKET_NAME, Key=DATA_KEY)
-    df = pd.read_pickle(io.BytesIO(df_bytes['Body']))
+    df = pd.read_pickle(io.BytesIO(df_bytes['Body'].read()))
     print("[INFO] DataFrame loaded with shape:", df.shape)
     return df
 
