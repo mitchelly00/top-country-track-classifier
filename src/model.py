@@ -26,7 +26,7 @@ def load_model():
     print("[INFO] Downloading and loading LightGBM model...")
     s3 = boto3.client('s3')
     model_bytes = s3.get_object(Bucket=BUCKET_NAME_MODEL, Key=MODEL_KEY)
-    model_str = model_bytes.decode("utf-8")
+    model_str = model_bytes['Body'].decode("utf-8")
     model = lgb.Booster(model_str=model_str)
     print("[INFO] Model loaded.")
     return model
