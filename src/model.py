@@ -25,9 +25,13 @@ OUTPUT_PKL_PRED_S3 = "track_metadata_with_predictions.pkl"
 def load_model():
     print("[INFO] Downloading and loading LightGBM model...")
     s3 = boto3.client('s3')
-    model_bytes = s3.get_object(Bucket=BUCKET_NAME_MODEL, Key=MODEL_KEY)
-    model_str = model_bytes['Body'].decode("utf-8")
-    model = lgb.Booster(model_str=model_str)
+    response = s3.get_object(Bucket=BUCKET_NAME_MODEL, Key=MODEL_KEY)
+    model_bytes = response['Body'].read()
+    # Save to temp file
+    with tempfile.NamedTemporaryFile(mode='wb', delete=False) as tmp:
+        tmp.write(model_bytes)
+        tmp_path = tmp.name
+    model = lgb.Booster(model_str=tmp_path)
     print("[INFO] Model loaded.")
     return model
 
