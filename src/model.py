@@ -3,6 +3,7 @@ import pandas as pd
 import io
 import lightgbm as lgb
 import numpy as np
+import tempfile
 
 MODEL_S3_URL = "https://ucwdc-country-classifier.s3.us-east-1.amazonaws.com/final_models/lightgbm_model.txt"
 PKL_S3_URL = "https://top-country-track-classifier.s3.us-east-1.amazonaws.com/metadata/track_metadata_combined.pkl"
