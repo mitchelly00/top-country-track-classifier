@@ -1,6 +1,3 @@
-import sys
-print(f"[DEBUG] Python executable used: {sys.executable}")
-
 import boto3
 import librosa
 import numpy as np
