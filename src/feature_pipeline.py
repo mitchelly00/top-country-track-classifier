@@ -102,8 +102,7 @@ def init_worker():
 
 def extract_openl3_embedding_from_s3(key: str) -> np.ndarray:
     s3 = boto3.client("s3")
-    bucket = 'ucwdc-country-classifier'
-    response = s3.get_object(Bucket=bucket, Key=key)
+    response = s3.get_object(Bucket=BUCKET_NAME, Key=key)
     mp3_bytes = response['Body'].read()
 
     wav_io = mp3_to_wav_bytes(mp3_bytes)
