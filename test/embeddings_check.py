@@ -4,7 +4,7 @@ import io
 
 # S3 config
 BUCKET_NAME = "top-country-track-classifier"
-KEY = "metadata/track_metadata_feature_embedding.pkl"
+KEY = "metadata/track_metadata_combined.pkl"
 
 # Create S3 client and download object
 s3 = boto3.client("s3")
