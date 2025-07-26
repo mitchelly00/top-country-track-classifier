@@ -180,6 +180,7 @@ def main():
     for k in tqdm(df["s3_key"].tolist(), desc="Extracting Embeddings"):
         try:
             emb = extract_openl3_embedding_from_s3(k, model)
+            print(f"Embedding shape: {emb.shape}")
         except Exception as e:
             print(f"Failed to process {k}: {e}")
             emb = None
