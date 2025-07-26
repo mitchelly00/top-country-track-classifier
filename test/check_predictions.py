@@ -15,5 +15,6 @@ body = response['Body'].read()
 df = pd.read_pickle(io.BytesIO(body))
 
 # Print the head
-print(df["prediction_proba"])
+for row in df["prediction_proba"]:
+    print(row)
 
