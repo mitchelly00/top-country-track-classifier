@@ -90,16 +90,16 @@ def upload_dataframe_as_pickle_to_s3(df, bucket=BUCKET_NAME, s3_key=OUTPUT_PKL_S
 class STFTPatched(STFT):
     pass
 
-# Global model (loaded per subprocess)
-_model = None
+# # Global model (loaded per subprocess)
+# _model = None
 
-def init_worker():
-    global _model
-    _model = openl3.models.load_audio_embedding_model(
-        input_repr="mel256",
-        content_type="music",
-        embedding_size=512
-    )
+# def init_worker():
+#     global _model
+#     _model = openl3.models.load_audio_embedding_model(
+#         input_repr="mel256",
+#         content_type="music",
+#         embedding_size=512
+#     )
 
 
 def extract_openl3_embedding_from_s3(key: str, model=None) -> np.ndarray:
@@ -119,7 +119,7 @@ def extract_openl3_embedding_from_s3(key: str, model=None) -> np.ndarray:
             embedding_size=512
         )
 
-    emb, ts = openl3.get_audio_embedding(audio, sr, model=_model, verbose=0)
+    emb, ts = openl3.get_audio_embedding(audio, sr, model=model, verbose=0)
     return emb.mean(axis=0)
 
 def process_key(key):

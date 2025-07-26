@@ -29,28 +29,30 @@ def inspect_feature_shapes(bucket_name, prefix=""):
                 else:
                     continue
 
-                # Look for 'Feature' or 'feature' column
-                feature_col = None
-                for col in df.columns:
-                    if col.lower() == "feature":
-                        feature_col = col
-                        break
+                for target in ["feature", "embedding", "combined"]:
+                    match_col = next((col for col in df.columns if col.lower() == target), None)
 
-                if feature_col is None:
-                    print("   ⚠️  No 'Feature' column found.\n")
-                    continue
+                    if match_col:
+                        item = df[match_col].iloc[0]
+                        if isinstance(item, str):
+                            try:
+                                item = np.fromstring(item.strip("[]"), sep=' ')
+                            except:
+                                item = item  # leave as-is if parsing fails
+                        else:
+                            item = np.array(item)
 
-                feature = df[feature_col].iloc[0]
-                if isinstance(feature, str):
-                    # Try to parse stringified list
-                    feature = np.fromstring(feature.strip("[]"), sep=' ')
-                else:
-                    feature = np.array(feature)
+                        shape = item.shape if hasattr(item, "shape") else len(item)
+                        print(f"   ✅ {match_col} shape: {shape}")
+                    else:
+                        print(f"   ⚠️  No '{target}' column found.")
 
-                print(f"   ✅ Feature shape: {feature.shape if hasattr(feature, 'shape') else len(feature)}\n")
+                print()
 
             except Exception as e:
                 print(f"   ❌ Error: {e}\n")
+
 inspect_feature_shapes(bucket_name="ucwdc-country-classifier")
 print("--------------------------------------------")
 inspect_feature_shapes(bucket_name="top-country-track-classifier")
+
