@@ -2,6 +2,8 @@ import boto3
 import pandas as pd
 import numpy as np
 
+# This is when I was trouble shooting an error about the size of the embedding
+
 #list variables
 
 NEW_BUCKET = "top-country-track-classifier"

@@ -14,7 +14,10 @@ response = s3.get_object(Bucket=BUCKET_NAME, Key=KEY)
 body = response['Body'].read()
 df = pd.read_pickle(io.BytesIO(body))
 
+
+print(df[["prediction","prediction_proba"]].head())
+
 # Print the head
-for row in df["prediction_proba"]:
+for row in df[["prediction","prediction_proba"]]:
     print(row)
 
