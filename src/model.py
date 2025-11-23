@@ -63,16 +63,18 @@ def main():
     model = load_model()
     df = load_dataframe()
     X = prepare_input(df)
-
+    classes = ['2ST', 'CHA', 'ECS', 'NC2', 'PLK', 'TR2', 'WCS', 'WTZ']
     print("[INFO] Running predictions...")
     probs = model.predict(X)
     preds = np.argmax(probs, axis=1) if probs.ndim > 1 else (probs > 0.5).astype(int)
 
     df["prediction"] = preds
     df["prediction_proba"] = probs.tolist() if probs.ndim > 1 else probs
+    df["prediction_name"] = df["prediction"].apply(lambda x: classes[x])
+
 
     print("[INFO] Sample predictions:")
-    print(df[["prediction", "prediction_proba"]].head())
+    print(df[["prediction_name", "prediction_proba"]].head())
 
     # Optionally: save locally or upload back to S3
     upload_dataframe_as_pickle_to_s3(df)
